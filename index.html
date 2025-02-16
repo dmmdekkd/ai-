@@ -1,162 +1,31 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeepSeek AI 对话</title>
+    <title>API 请求</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
-            background-color: #f4f4f9;
-            color: #333;
         }
-        #chatContainer {
-            max-width: 600px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        #status {
+            margin-top: 10px;
+            font-size: 16px;
+            color: #555;
         }
-        #chatLog {
-            height: 300px;
-            overflow-y: auto;
-            border: 1px solid #ddd;
-            padding: 10px;
-            border-radius: 4px;
-            margin-bottom: 10px;
-            background-color: #fafafa;
-        }
-        .message {
-            margin-bottom: 10px;
-        }
-        .user-message {
-            text-align: right;
-            color: #007bff;
-        }
-        .ai-message {
-            text-align: left;
-            color: #28a745;
-        }
-        #chatForm {
-            display: flex;
-            gap: 10px;
-        }
-        #message {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        button {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        .loading {
-            color: #888;
-            font-style: italic;
-        }
-        .error {
-            color: red;
+        button:disabled {
+            background-color: #ccc;
         }
     </style>
 </head>
 <body>
-    <h1>DeepSeek AI 对话</h1>
-    <div id="chatContainer">
-        <div id="chatLog">
-            <p class="message ai-message">你好！我是AI助手，请问有什么可以帮您？</p>
-        </div>
-        <form id="chatForm">
-            <input type="text" id="message" placeholder="请输入消息" required>
-            <button type="submit">发送</button>
-        </form>
-    </div>
+    <h1>API 请求</h1>
+    <label for="msg">输入消息：</label>
+    <input type="text" id="msg" value="你好">
+    <button id="sendBtn" onclick="callAPI()">发送请求</button>
+    <p id="status"></p>
 
-    <script>
-        const chatLog = document.getElementById('chatLog');
-        const chatForm = document.getElementById('chatForm');
-        const messageInput = document.getElementById('message');
-
-        // 添加消息到聊天记录
-        function addMessage(role, content) {
-            const messageDiv = document.createElement('div');
-            messageDiv.classList.add('message', `${role}-message`);
-            messageDiv.textContent = content;
-            chatLog.appendChild(messageDiv);
-            chatLog.scrollTop = chatLog.scrollHeight; // 滚动到底部
-        }
-
-        // 显示加载状态
-        function showLoading() {
-            const loadingDiv = document.createElement('div');
-            loadingDiv.classList.add('message', 'ai-message', 'loading');
-            loadingDiv.textContent = 'AI正在思考...';
-            chatLog.appendChild(loadingDiv);
-            chatLog.scrollTop = chatLog.scrollHeight;
-            return loadingDiv;
-        }
-
-        // 隐藏加载状态
-        function hideLoading(loadingDiv) {
-            chatLog.removeChild(loadingDiv);
-        }
-
-        // 处理表单提交
-        chatForm.addEventListener('submit', async function(event) {
-            event.preventDefault(); // 阻止表单默认提交行为
-
-            const userMessage = messageInput.value.trim();
-            if (!userMessage) return;
-
-            // 添加用户消息
-            addMessage('user', userMessage);
-            messageInput.value = ''; // 清空输入框
-
-            // 显示加载状态
-            const loadingDiv = showLoading();
-
-            try {
-                // 发送请求到API
-                const apiUrl = `https://api.317ak.com/API/AI/deepseek/deepseek3.0.php?msg=${encodeURIComponent(userMessage)}&type=text`;
-                const response = await fetch(apiUrl);
-
-                if (!response.ok) {
-                    throw new Error('请求失败');
-                }
-
-                const aiResponse = await response.text();
-
-                // 隐藏加载状态
-                hideLoading(loadingDiv);
-
-                // 添加AI回复
-                addMessage('ai', aiResponse);
-            } catch (error) {
-                // 隐藏加载状态
-                hideLoading(loadingDiv);
-
-                // 显示错误信息
-                addMessage('ai', '抱歉，请求失败，请稍后重试。');
-                console.error('请求失败：', error);
-            }
-        });
-
-        // 支持回车键发送消息
-        messageInput.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault();
-                chatForm.dispatchEvent(new Event('submit'));
-            }
-        });
-    </script>
+    <script src="app.js" defer></script>
 </body>
 </html>
